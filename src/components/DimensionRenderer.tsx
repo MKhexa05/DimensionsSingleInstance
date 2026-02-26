@@ -3,8 +3,8 @@ import * as THREE from "three";
 import { Wall } from "../store/Wall";
 import { Container, Text } from "@react-three/uikit";
 import { Line } from "@react-three/drei";
-import { useThree, type ThreeEvent } from "@react-three/fiber";
-import { useCallback, useState } from "react";
+import { useFrame, useThree, type ThreeEvent } from "@react-three/fiber";
+import { useCallback, useRef, useState } from "react";
 import { appStore } from "../store/AppStore";
 import { formatDimension } from "../utils/dimensionUtils";
 
@@ -14,6 +14,7 @@ interface DimensionRendererProps {
 
 const DIM_COLOR = "#3b82f6";
 const TICK_SIZE = 0.2; // Extra length for extension lines
+const BASE_UI_ZOOM = 50;
 const getReadableParallelAngle = (baseAngle: number) => {
   let angle = Math.atan2(Math.sin(baseAngle), Math.cos(baseAngle));
   if (angle > Math.PI / 2) angle -= Math.PI;
@@ -27,6 +28,7 @@ export const DimensionRenderer = observer(
 
     const { camera, raycaster, mouse } = useThree();
     const [isDragging, setIsDragging] = useState(false);
+    const labelGroupRef = useRef<THREE.Group>(null);
 
     const start = wall.startPoint;
     const end = wall.endPoint;
@@ -127,6 +129,19 @@ export const DimensionRenderer = observer(
         : dimension.lockedAxis === "y"
           ? Math.PI / 2
           : getReadableParallelAngle(Math.atan2(wall.direction.y, wall.direction.x));
+
+    // useFrame(() => {
+    //   const labelGroup = labelGroupRef.current;
+    //   if (!labelGroup) return;
+    //   if ((camera as THREE.Camera & { isOrthographicCamera?: boolean }).isOrthographicCamera) {
+    //     const ortho = camera as THREE.OrthographicCamera;
+    //     const scale = BASE_UI_ZOOM / Math.max(ortho.zoom, 0.0001);
+    //     labelGroup.scale.set(scale, scale, 1);
+    //   } else {
+    //     labelGroup.scale.set(1, 1, 1);
+    //   }
+    // });
+
     return (
       <group
         onPointerDown={onPointerDown}
@@ -141,7 +156,7 @@ export const DimensionRenderer = observer(
         <Line points={[end, extEnd]} color={DIM_COLOR} lineWidth={1.2} />
 
         {/* UIKit Label */}
-        <group position={dimCenter} rotation={[0, 0, angle]}>
+        <group ref={labelGroupRef} scale={1.5} position={dimCenter} rotation={[0, 0, angle]}>
           <Container
             backgroundColor="#ffffff"
             borderRadius={6}
