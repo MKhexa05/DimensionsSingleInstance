@@ -3,7 +3,7 @@ import * as THREE from "three";
 import { Wall } from "../store/Wall";
 import { Container, Text } from "@react-three/uikit";
 import { Line } from "@react-three/drei";
-import { useFrame, useThree, type ThreeEvent } from "@react-three/fiber";
+import { useThree, type ThreeEvent } from "@react-three/fiber";
 import { useCallback, useRef, useState } from "react";
 import { appStore } from "../store/AppStore";
 import { formatDimension } from "../utils/dimensionUtils";
@@ -14,7 +14,7 @@ interface DimensionRendererProps {
 
 const DIM_COLOR = "#3b82f6";
 const TICK_SIZE = 0.2; // Extra length for extension lines
-const BASE_UI_ZOOM = 50;
+// const BASE_UI_ZOOM = 50;
 const getReadableParallelAngle = (baseAngle: number) => {
   let angle = Math.atan2(Math.sin(baseAngle), Math.cos(baseAngle));
   if (angle > Math.PI / 2) angle -= Math.PI;
