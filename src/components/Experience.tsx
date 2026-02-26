@@ -89,7 +89,7 @@ export const Experience = observer(() => {
         <OrthographicCamera
           makeDefault
           position={[0, 0, 10]}
-          zoom={100}
+          zoom={50}
           near={0.1}
           far={1000}
         />
