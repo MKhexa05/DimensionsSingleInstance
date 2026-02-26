@@ -1,73 +1,95 @@
-# React + TypeScript + Vite
+# Dimensions
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Interactive 2D wall and dimension editor built with React, Three.js, and MobX.
 
-Currently, two official plugins are available:
+## Tech Stack
+- React 19 + TypeScript
+- Vite
+- `@react-three/fiber` + `@react-three/drei`
+- MobX (`mobx`, `mobx-react-lite`)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Setup
+1. Install dependencies:
+   ```bash
+   npm install
+   ```
+2. Start development server:
+   ```bash
+   npm run dev
+   ```
+3. Build for production:
+   ```bash
+   npm run build
+   ```
+4. Preview production build:
+   ```bash
+   npm run preview
+   ```
 
-## React Compiler
+## Controls
+- `S`: Select tool
+- `W`: Wall draw tool
+- `D`: Dimension tool
+- `Esc` (while drawing wall): Cancel current in-progress wall
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Project Flow
+### 1. Global state (MobX)
+- `src/store/AppStore.ts`
+  - Tracks active tool, wall list, selected wall, drawing preview wall, and length modal state.
+- `src/store/Wall.ts`
+  - Wall geometry model (`startPoint`, `endPoint`, `length`, `angle`, `normal`, etc.).
+- `src/store/Dimension.ts`
+  - Dimension settings (`offset`, locked axis: `none | x | y`).
 
-## Expanding the ESLint configuration
+### 2. Scene composition
+- `src/components/Experience.tsx`
+  - Renders grid, all walls, preview wall, endpoints, dimensions, and tool logic components.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### 3. Wall drawing lifecycle
+- `src/components/WallDrawTool.tsx`
+  - First click sets wall start point.
+  - Mouse move updates rubber-band preview wall.
+  - Second click sets endpoint and commits final wall.
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+### 4. Wall editing
+- `src/components/WallEndpoints.tsx`
+  - Drag white endpoint handles to update wall start/end points directly.
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+### 5. Dimension workflow
+- `src/components/DimensionRenderer.tsx`
+  - Draws dimension line, extension lines, and label.
+  - Drag dimension line to offset it.
+  - Double-click label to open length modal.
+- `src/components/DimensionTool.tsx`
+  - `X` toggles horizontal lock.
+  - `Y` toggles vertical lock.
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+### 6. Length editing modal
+- `src/components/UI/LengthModal.tsx`
+  - Opens from dimension label double-click.
+  - If axis is `none`: edits actual wall length.
+  - If axis is `x`: edits horizontal projection length.
+  - If axis is `y`: edits vertical projection length.
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Usage Guide
+### Draw a wall
+1. Press `W`.
+2. Click once to set start point.
+3. Move pointer to preview rubber wall.
+4. Click again to finalize.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+### Add dimension
+1. Press `D`.
+2. Click a wall to select/add its dimension.
+3. Drag dimension line to move its offset.
+4. Press `X` or `Y` to lock axis if needed.
+5. Double-click dimension label to edit length numerically.
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+### Edit wall endpoints
+1. Press `S` (or stay with selected wall visible).
+2. Select wall.
+3. Drag white endpoint handles.
+
+## Notes
+- Coordinate plane is XY (`z = 0`).
+- Length label formatting uses feet/inch style via `src/utils/dimensionUtils.ts`.
