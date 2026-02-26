@@ -11,6 +11,7 @@ import { Dimension } from "../store/Dimension";
 
 import { Toolbar } from "./UI/Toolbar";
 import { LengthModal } from "./UI/LengthModal";
+import { InfoOverlay } from "./UI/InfoOverlay";
 
 const Scene = observer(() => {
   return (
@@ -24,10 +25,10 @@ const Scene = observer(() => {
         fadeDistance={50}
         fadeStrength={5}
         cellSize={1}
-        sectionSize={12}
-        sectionThickness={1.5}
+        // sectionSize={12}
+        // sectionThickness={1.5}
         sectionColor="#cbd5e1"
-        cellColor="#f1f5f9"
+        cellColor="black"
         rotation={[Math.PI / 2, 0, 0]}
       />
 
@@ -82,6 +83,7 @@ export const Experience = observer(() => {
       }}
     >
       <Toolbar />
+      <InfoOverlay />
       <LengthModal />
       <Canvas>
         <OrthographicCamera
