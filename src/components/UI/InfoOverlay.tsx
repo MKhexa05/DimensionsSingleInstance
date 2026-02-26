@@ -28,6 +28,7 @@ export const InfoOverlay = observer(() => {
       "Click a wall to select/add a dimension",
       "Drag dimension line to change offset",
       "Press X for horizontal lock, Y for vertical lock",
+      "Press Ctlr to unlock axis",
       "Double-click label to edit length",
     ];
   }

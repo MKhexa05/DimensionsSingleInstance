@@ -161,7 +161,7 @@ export const DimensionRenderer = observer(
             borderWidth={1}
             borderColor="#e2e8f0"
           >
-            <Text fontSize={12} color="#1e293b" fontWeight="bold">
+            <Text fontSize={18} color="#1e293b" fontWeight="bold">
               {lengthText}
             </Text>
           </Container>
