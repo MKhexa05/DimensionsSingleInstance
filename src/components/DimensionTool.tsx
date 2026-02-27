@@ -1,3 +1,5 @@
+/** @format */
+
 import { observer } from "mobx-react-lite";
 import { appStore } from "../store/AppStore";
 import { useEffect } from "react";
@@ -5,7 +7,7 @@ import { useEffect } from "react";
 export const DimensionTool = observer(() => {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (appStore.activeTool !== "dimension") return;
+      if (appStore.activeTool === "wall") return;
       const key = e.key.toLowerCase();
 
       const selectedWall = appStore.selectedWall;
