@@ -8,10 +8,11 @@ import { WallDrawTool } from "./WallDrawTool";
 import { DimensionRenderer } from "./DimensionRenderer";
 import { DimensionTool } from "./DimensionTool";
 import { Dimension } from "../store/Dimension";
-
+import { Perf } from "r3f-perf";
 import { Toolbar } from "./UI/Toolbar";
 import { LengthModal } from "./UI/LengthModal";
 import { InfoOverlay } from "./UI/InfoOverlay";
+import { WallCountTweak } from "./UI/WallCountTweak";
 
 const Scene = observer(() => {
   return (
@@ -63,7 +64,9 @@ const Scene = observer(() => {
       ))}
 
       {/* Render rubber-band wall */}
-      {appStore.drawingWall && <WallMesh wall={appStore.drawingWall} isPreview />}
+      {appStore.drawingWall && (
+        <WallMesh wall={appStore.drawingWall} isPreview />
+      )}
 
       {/* Drawing & Dimension Tool Logic */}
       <WallDrawTool />
@@ -83,6 +86,7 @@ export const Experience = observer(() => {
       }}
     >
       <Toolbar />
+      <WallCountTweak />
       <InfoOverlay />
       <LengthModal />
       <Canvas>
@@ -93,6 +97,7 @@ export const Experience = observer(() => {
           near={0.1}
           far={1000}
         />
+        <Perf position="top-left" />
         <Scene />
       </Canvas>
     </div>

@@ -20,7 +20,6 @@ export const DimensionTool = observer(() => {
           selectedWall.dimension.lockedAxis === "y" ? "none" : "y",
         );
       } else if (e.ctrlKey) {
-        console.log('control')
         selectedWall.dimension.setLockedAxis("none");
       }
     };

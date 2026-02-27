@@ -1,7 +1,4 @@
-import { useFrame } from "@react-three/fiber";
 import { observer } from "mobx-react-lite";
-import { useRef } from "react";
-import * as THREE from "three";
 import { Wall } from "../store/Wall";
 
 interface WallMeshProps {
@@ -13,26 +10,19 @@ interface WallMeshProps {
 
 export const WallMesh = observer(
   ({ wall, isSelected, isPreview, onPointerDown }: WallMeshProps) => {
-    const groupRef = useRef<THREE.Group>(null);
-    const meshRef = useRef<THREE.Mesh>(null);
-
-    useFrame(() => {
-      const group = groupRef.current;
-      const mesh = meshRef.current;
-      if (!group || !mesh) return;
-      const length = Math.max(wall.length, 0.001);
-      group.position.copy(wall.center);
-      group.rotation.set(0, 0, wall.angle);
-      mesh.scale.set(length, wall.thickness, 0.1);
-    });
+    const length = Math.max(wall.length, 0.001);
+    const thickness = wall.thickness;
+    const angle = wall.angle;
+    const center = wall.center;
 
     return (
       <group
-        ref={groupRef}
+        position={center}
+        rotation={[0, 0, angle]}
         onPointerDown={onPointerDown}
       >
-        <mesh ref={meshRef}>
-          <boxGeometry args={[1, 1, 1]} />
+        <mesh>
+          <boxGeometry args={[length, thickness, 0.1]} />
           <meshStandardMaterial
             color={isPreview ? "#f97316" : isSelected ? "#3b82f6" : "#000000"}
             roughness={0.1}

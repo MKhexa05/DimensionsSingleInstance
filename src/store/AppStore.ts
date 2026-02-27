@@ -3,11 +3,22 @@ import * as THREE from "three";
 import { Wall } from "./Wall";
 import { Dimension } from "./Dimension";
 import type { LockedAxis } from "./Dimension";
+import seedWallData from "../data/walls.json";
 
 export type ActiveTool = "select" | "wall" | "dimension";
 
+interface SeedWallRecord {
+  centerX: number;
+  centerY: number;
+  angle: number;
+  length: number;
+  dimensionOffset: number;
+}
+
 class AppStore {
-  walls: Wall[] = [];
+  seedWalls: Wall[] = [];
+  userWalls: Wall[] = [];
+  visibleSeedWallCount = 0;
   activeTool: ActiveTool = "select";
   selectedWallId: string | null = null;
   drawingWall: Wall | null = null;
@@ -16,30 +27,22 @@ class AppStore {
 
   constructor() {
     makeAutoObservable(this);
-    this.walls = this.createSeedWalls(50);
+    this.seedWalls = this.createSeedWalls(seedWallData as SeedWallRecord[]);
+    this.visibleSeedWallCount = 200;
   }
 
-  private createSeedWalls(count: number): Wall[] {
-    const walls: Wall[] = [];
-
-    for (let i = 0; i < count; i += 1) {
-      const centerX = (Math.random() - 0.5) * 30;
-      const centerY = (Math.random() - 0.5) * 20;
-      const length = 0.6 + Math.random() * 1.8;
-      const angle = Math.random() * Math.PI * 2;
-      const halfDx = Math.cos(angle) * (length * 0.5);
-      const halfDy = Math.sin(angle) * (length * 0.5);
-      const start = new THREE.Vector3(centerX - halfDx, centerY - halfDy, 0);
-      const end = new THREE.Vector3(centerX + halfDx, centerY + halfDy, 0);
+  private createSeedWalls(seedRecords: SeedWallRecord[]): Wall[] {
+    return seedRecords.map((record) => {
+      const halfDx = Math.cos(record.angle) * (record.length * 0.5);
+      const halfDy = Math.sin(record.angle) * (record.length * 0.5);
+      const start = new THREE.Vector3(record.centerX - halfDx, record.centerY - halfDy, 0);
+      const end = new THREE.Vector3(record.centerX + halfDx, record.centerY + halfDy, 0);
       const wall = new Wall(start, end);
       const dim = new Dimension();
-      const offsetMag = 0.25 + Math.random() * 0.75;
-      dim.offset = (Math.random() < 0.5 ? -1 : 1) * offsetMag;
+      dim.offset = record.dimensionOffset;
       wall.setDimension(dim);
-      walls.push(wall);
-    }
-
-    return walls;
+      return wall;
+    });
   }
 
   setActiveTool(tool: ActiveTool) {
@@ -52,8 +55,28 @@ class AppStore {
     }
   }
 
+  setVisibleSeedWallCount(count: number) {
+    const clamped = Math.max(0, Math.min(Math.floor(count), this.seedWalls.length));
+    this.visibleSeedWallCount = clamped;
+    if (this.selectedWallId && !this.walls.some((wall) => wall.id === this.selectedWallId)) {
+      this.selectedWallId = null;
+      this.closeLengthModal();
+    }
+  }
+
+  get maxSeedWallCount(): number {
+    return this.seedWalls.length;
+  }
+
+  get walls(): Wall[] {
+    return [
+      ...this.seedWalls.slice(0, this.visibleSeedWallCount),
+      ...this.userWalls,
+    ];
+  }
+
   addWall(wall: Wall) {
-    this.walls.push(wall);
+    this.userWalls.push(wall);
   }
 
   setSelectedWallId(id: string | null) {
@@ -79,7 +102,8 @@ class AppStore {
   }
 
   deleteWall(id: string) {
-    this.walls = this.walls.filter((w) => w.id !== id);
+    this.seedWalls = this.seedWalls.filter((w) => w.id !== id);
+    this.userWalls = this.userWalls.filter((w) => w.id !== id);
     if (this.selectedWallId === id) {
       this.selectedWallId = null;
       this.closeLengthModal();
