@@ -4,6 +4,7 @@ import { Wall } from "./Wall";
 import { Dimension } from "./Dimension";
 import type { LockedAxis } from "./Dimension";
 import seedWallData from "../data/walls.json";
+import { computeDimensionLinePoints } from "../utils/dimensionLineUtils";
 
 export type ActiveTool = "select" | "wall" | "dimension";
 
@@ -41,6 +42,9 @@ class AppStore {
       const wall = new Wall(start, end);
       const dim = new Dimension();
       dim.offset = record.dimensionOffset;
+      dim.setPoints(
+        computeDimensionLinePoints(wall, dim.offset, dim.lockedAxis).positions,
+      );
       wall.setDimension(dim);
       return wall;
     });

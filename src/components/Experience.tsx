@@ -6,6 +6,7 @@ import { WallMesh } from "./WallMesh";
 import { WallEndpoints } from "./WallEndpoints";
 import { WallDrawTool } from "./WallDrawTool";
 import { DimensionRenderer } from "./DimensionRenderer";
+import { DimensionLinesBatch } from "./DimensionLinesBatch";
 import { DimensionTool } from "./DimensionTool";
 import { Dimension } from "../store/Dimension";
 import { Perf } from "r3f-perf";
@@ -44,6 +45,8 @@ const Scene = observer(() => {
           }
         }}
       />
+
+      <DimensionLinesBatch />
 
       {/* Render existing walls */}
       {appStore.walls.map((wall) => (
