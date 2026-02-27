@@ -216,11 +216,14 @@ export const DimensionRenderer = observer(
           <Container
             backgroundColor="#ffffff"
             borderRadius={6}
-            paddingX={6}
-            paddingY={2}
+            paddingX={4} // matches "4px"
+            paddingY={2} // matches "2px"
             alignItems="center"
             justifyContent="center"
             pointerEvents="auto"
+            borderWidth={1}
+            borderColor="#e2e8f0"
+            transformTranslateY={-1} // subtle lift like DOM box-shadow
             onClick={(e: any) => {
               e.stopPropagation();
               if (e.detail === 2) {
