@@ -11,7 +11,7 @@ import { useThree, type ThreeEvent } from "@react-three/fiber";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { appStore } from "../store/AppStore";
 import { formatDimension } from "../utils/dimensionUtils";
-import { Line } from "@react-three/drei";
+// import { Line } from "@react-three/drei";
 
 export const DIMENSION_LINE_MATERIAL = new LineMaterial({
   color: 0x3b82f6,
@@ -36,12 +36,25 @@ interface DimensionRendererProps {
 }
 
 const TICK_SIZE = 0.2;
+const LABEL_BASE_ZOOM = 50;
+const LABEL_BASE_SCALE = 1.5;
+const LABEL_SCALE_POWER = 1;
+const LABEL_MIN_SCALE = 0.75;
+const LABEL_MAX_SCALE = 3;
 
 const getReadableParallelAngle = (baseAngle: number) => {
   let angle = Math.atan2(Math.sin(baseAngle), Math.cos(baseAngle));
   if (angle > Math.PI / 2) angle -= Math.PI;
   if (angle < -Math.PI / 2) angle += Math.PI;
   return angle;
+};
+
+const getLabelScaleFromZoom = (zoom: number) => {
+  const safeZoom = Math.max(zoom, 0.0001);
+  const scale =
+    LABEL_BASE_SCALE *
+    Math.pow(LABEL_BASE_ZOOM / safeZoom, LABEL_SCALE_POWER);
+  return THREE.MathUtils.clamp(scale, LABEL_MIN_SCALE, LABEL_MAX_SCALE);
 };
 
 export const DimensionRenderer = observer(
@@ -197,6 +210,7 @@ export const DimensionRenderer = observer(
           : getReadableParallelAngle(
               Math.atan2(wall.direction.y, wall.direction.x),
             );
+    const labelScale = getLabelScaleFromZoom(appStore.cameraZoom);
 
     return (
       <group
@@ -212,7 +226,7 @@ export const DimensionRenderer = observer(
           lineWidth={1.5}
         /> */}
 
-        <group position={dimCenter} rotation={[0, 0, angle]} scale={1.5}>
+        <group position={dimCenter} rotation={[0, 0, angle]} scale={labelScale}>
           <Container
             backgroundColor="#ffffff"
             borderRadius={6}

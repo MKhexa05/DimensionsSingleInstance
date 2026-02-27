@@ -36,6 +36,13 @@ const Scene = observer(() => {
       <OrbitControls
         enableRotate={false}
         mouseButtons={{ LEFT: undefined, MIDDLE: 1, RIGHT: 2 }}
+        onChange={(e) => {
+          if (!e) return;
+          const zoom = (e.target.object as { zoom?: number }).zoom;
+          if (typeof zoom === "number") {
+            appStore.setCameraZoom(zoom);
+          }
+        }}
       />
 
       {/* Render existing walls */}
