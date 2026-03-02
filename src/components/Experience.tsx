@@ -1,3 +1,5 @@
+/** @format */
+
 import { Canvas } from "@react-three/fiber";
 import { OrthographicCamera, Grid, OrbitControls } from "@react-three/drei";
 import { observer } from "mobx-react-lite";
@@ -39,6 +41,7 @@ const Scene = observer(() => {
         mouseButtons={{ LEFT: undefined, MIDDLE: 1, RIGHT: 2 }}
         onChange={(e) => {
           if (!e) return;
+          if (!appStore.showDimensionRenderer) return;
           const zoom = (e.target.object as { zoom?: number }).zoom;
           if (typeof zoom === "number") {
             appStore.setCameraZoom(zoom);
@@ -68,7 +71,12 @@ const Scene = observer(() => {
               }
             }}
           />
-          {wall.dimension && <DimensionRenderer wall={wall} />}
+          {wall.dimension && appStore.showDimensionRenderer && (
+            <DimensionRenderer
+              wall={wall}
+              // showLabel={appStore.showDimensionRenderer}
+            />
+          )}
           {appStore.selectedWallId === wall.id && <WallEndpoints wall={wall} />}
         </group>
       ))}
@@ -100,8 +108,8 @@ export const Experience = observer(() => {
           position: "absolute",
           top: "16px",
           left: "309px",
-          width:"300px",
-          lineHeight:"1.2",
+          width: "300px",
+          lineHeight: "1.2",
           zIndex: 1200,
           background: "rgba(30, 30, 30, 0.85)",
           color: "white",
